@@ -15,8 +15,19 @@
         <GridEditSettings AllowEditing="true"></GridEditSettings>
         <GridColumns>
             <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn HeaderText="Profile" Width="120px">
+                <Template>
+                    @{
+                        var employee = (context as EmployeeViewModel);
+                        <div class="profile-image-container">
+                        <img src="@(employee?.ImagePath)" />
+                        </div>
+                    }
+                </Template>
+            </GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.FirstName)" HeaderText="First Name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.LastName)" HeaderText="Last Name"></GridColumn>
+            @*Designation Column and Dropdonw Setting*@
             <GridForeignColumn Field="@nameof(EmployeeViewModel.EmployeeJobTitleId)"
                                TValue="EmployeeJobTitle"
                                ForeignDataSource="employeeJobTitleData"
@@ -24,7 +35,7 @@
                                HeaderText="Designation"
                                Width="100px">
                 <EditTemplate>
-                    <SfDropDownList @bind-Value="@((context as EmployeeViewModel).EmployeeJobTitleId)"
+                    <SfDropDownList @bind-value="@((context as EmployeeViewModel).EmployeeJobTitleId)"
                                     ID="EmployeeJobTitleId"
                                     DataSource="employeeJobTitleData"
                                     TItem="EmployeeJobTitle"
@@ -34,23 +45,66 @@
                     </SfDropDownList>
                 </EditTemplate>
             </GridForeignColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.Gender)" HeaderText="Gender" Width="100px"></GridColumn>
+            @*Gender Column and Dropdonw Setting*@
+            <GridColumn Field="@nameof(EmployeeViewModel.Gender)" HeaderText="Gender" Width="100px">
+                <EditTemplate>
+                    <SfDropDownList DataSource="genderCollection"
+                                    TItem="string" TValue="string"
+                                    @bind-value="@((context as EmployeeViewModel).Gender)">
+                    </SfDropDownList>
+                </EditTemplate>
+            </GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.DateOfBirth)" HeaderText="DOB" Format="d"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn>
+
+            @*Reports Column and Dropdonw Setting*@
+            <GridForeignColumn Field="@nameof(EmployeeViewModel.ReportToEmpId)"
+                               TValue="ReportToViewModel"
+                               ForeignDataSource="reportToEmpoloyeeData"
+                               ForeignKeyValue="ReportToName"
+                               HeaderText="Reports To"
+                               Width="100px">
+                <EditTemplate>
+                    <SfDropDownList @bind-value="@((context as EmployeeViewModel).ReportToEmpId)"
+                                    ID="ReportToEmpId"
+                                    DataSource="reportToEmpoloyeeData"
+                                    TItem="ReportToViewModel"
+                                    TValue="Nullable<int>">
+                        <DropDownListFieldSettings Text="ReportToName" Value="ReportToEmpId"></DropDownListFieldSettings>
+
+                    </SfDropDownList>
+                </EditTemplate>
+            </GridForeignColumn>
+
         </GridColumns>
     </SfGrid>
 </div>
 
+<style>
+    .profile-image-container {
+        width: 80px;
+        height: 80px;
+    }
+
+        .profile-image-container img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50px;
+        }
+</style>
 
 
 @code {
+    private string[] genderCollection = Enum.GetNames(typeof(GenderValEnum));
     private List<EmployeeViewModel>? employeeData = null;
     private List<EmployeeJobTitle>? employeeJobTitleData;
+    private List<ReportToViewModel>? reportToEmpoloyeeData;
+
     //private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     protected override async Task OnInitializedAsync()
     {
         employeeData = await EmployeeManagementService.GetEmployees();
         employeeJobTitleData = await EmployeeManagementService.GetEmployeeJobTitles();
+        reportToEmpoloyeeData = await EmployeeManagementService.GetReportToEmployees();
     }
 }

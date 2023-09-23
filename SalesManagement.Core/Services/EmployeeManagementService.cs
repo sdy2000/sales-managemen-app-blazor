@@ -24,7 +24,7 @@ namespace SalesManagement.Core.Services
             {
                 return await _context.Employees.Convert();
             }
-            catch(Exception)
+            catch (Exception)
             {
                 throw;
             }
@@ -35,6 +35,31 @@ namespace SalesManagement.Core.Services
             try
             {
                 return await _context.EmployeeJobTitles.ToListAsync();
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<List<ReportToViewModel>> GetReportToEmployees()
+        {
+            try
+            {
+                List<ReportToViewModel> employees = await (from e in _context.Employees
+                              join j in _context.EmployeeJobTitles
+                              on e.EmployeeJobTitleId equals j.EmployeeJobTitleId
+                              where j.Name.ToUpper() == "TL" || j.Name.ToUpper() == "SM"
+                              select new ReportToViewModel
+                              {
+                                  ReportToEmpId = e.Id,
+                                  ReportToName = e.FirstName + " " + e.LastName.Substring(0, 1).ToUpper()
+                              }).ToListAsync();
+
+                employees.Add(new ReportToViewModel { ReportToEmpId = null, ReportToName = "<None>" });
+
+                return employees.OrderBy(o=>o.ReportToEmpId).ToList();
             }
             catch (Exception)
             {

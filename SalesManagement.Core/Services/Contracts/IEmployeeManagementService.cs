@@ -7,5 +7,6 @@ namespace SalesManagement.Core.Services.Contracts
     {
         Task<List<EmployeeViewModel>> GetEmployees();
         Task<List<EmployeeJobTitle>> GetEmployeeJobTitles();
+        Task<List<ReportToViewModel>> GetReportToEmployees();
     }
 }
