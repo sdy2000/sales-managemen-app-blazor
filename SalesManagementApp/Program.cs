@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
+using Microsoft.EntityFrameworkCore;
+using SalesManagement.Data.Context;
 using SalesManagementApp.Data;
 
 //
@@ -7,6 +9,18 @@ using Syncfusion.Blazor;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+#region DATA BASE CONTEXT SALESMANAGEMENTDB
+
+builder.Services.AddDbContext<SalesManagementDbContext>(options =>
+{
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("SalesManagementDbConnection")
+        ?? throw new InvalidOperationException("Connection 'SalesManagementDbConnection' not found ")
+        );
+});
+
+#endregion
 
 // Add services to the container.
 builder.Services.AddRazorPages();
