@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.EntityFrameworkCore;
+using SalesManagement.Core.Services;
+using SalesManagement.Core.Services.Contracts;
 using SalesManagement.Data.Context;
 using SalesManagementApp.Data;
 
@@ -19,6 +21,12 @@ builder.Services.AddDbContext<SalesManagementDbContext>(options =>
         ?? throw new InvalidOperationException("Connection 'SalesManagementDbConnection' not found ")
         );
 });
+
+#endregion
+
+#region IoC
+
+builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
 
 #endregion
 
