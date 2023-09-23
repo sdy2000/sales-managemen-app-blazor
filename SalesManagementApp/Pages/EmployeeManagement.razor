@@ -1,6 +1,8 @@
 ﻿@page "/EmployeeManagement"
 @using SalesManagement.Core.DTOs;
 @using SalesManagement.Core.Services.Contracts;
+@using SalesManagement.Data.Entities;
+@using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
 
 @inject IEmployeeManagementService EmployeeManagementService
@@ -10,13 +12,30 @@
 
 <div class="container">
     <SfGrid DataSource="employeeData">
+        <GridEditSettings AllowEditing="true"></GridEditSettings>
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" IsPrimaryKey="true"  Width="50px"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.FirstName)" HeaderText="First Name" ></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.LastName)" HeaderText="Last Name" ></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.EmployeeJobTitleId)" HeaderText="Designation" Width="100px"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.Gender)" HeaderText="Gender"  Width="100px"></GridColumn>
-            <GridColumn Field="@nameof(EmployeeViewModel.DateOfBirth)" HeaderText="DOB"  Format="d"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.FirstName)" HeaderText="First Name"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.LastName)" HeaderText="Last Name"></GridColumn>
+            <GridForeignColumn Field="@nameof(EmployeeViewModel.EmployeeJobTitleId)"
+                               TValue="EmployeeJobTitle"
+                               ForeignDataSource="employeeJobTitleData"
+                               ForeignKeyValue="Name"
+                               HeaderText="Designation"
+                               Width="100px">
+                <EditTemplate>
+                    <SfDropDownList @bind-Value="@((context as EmployeeViewModel).EmployeeJobTitleId)"
+                                    ID="EmployeeJobTitleId"
+                                    DataSource="employeeJobTitleData"
+                                    TItem="EmployeeJobTitle"
+                                    TValue="int">
+                        <DropDownListFieldSettings Text="Name" Value="EmployeeJobTitleId"></DropDownListFieldSettings>
+
+                    </SfDropDownList>
+                </EditTemplate>
+            </GridForeignColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.Gender)" HeaderText="Gender" Width="100px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.DateOfBirth)" HeaderText="DOB" Format="d"></GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.ReportToEmpId)" HeaderText="Reports" Width="100px"></GridColumn>
         </GridColumns>
     </SfGrid>
@@ -26,10 +45,12 @@
 
 @code {
     private List<EmployeeViewModel>? employeeData = null;
+    private List<EmployeeJobTitle>? employeeJobTitleData;
     //private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     protected override async Task OnInitializedAsync()
     {
         employeeData = await EmployeeManagementService.GetEmployees();
+        employeeJobTitleData = await EmployeeManagementService.GetEmployeeJobTitles();
     }
 }
