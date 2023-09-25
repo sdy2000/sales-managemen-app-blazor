@@ -27,6 +27,7 @@ builder.Services.AddDbContext<SalesManagementDbContext>(options =>
 #region IoC
 
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 #endregion
 
