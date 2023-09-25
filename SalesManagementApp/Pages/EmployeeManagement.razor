@@ -5,6 +5,7 @@
 @using SalesManagement.Data.Entities;
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Navigations;
 @using Syncfusion.Blazor.Spinner
 
 @inject IEmployeeManagementService EmployeeManagementService
@@ -13,11 +14,24 @@
 
 
 <div class="container">
-    <SfGrid @ref="SfEmployeeGrid" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
+    <SfGrid @ref="SfEmployeeGrid" AllowExcelExport="true" AllowPdfExport="true" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
         <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
-        <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeViewModel"></GridEvents>
+        <GridEvents OnToolbarClick="ToolbarBtnClickHandler" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeViewModel"></GridEvents>
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" AllowAdding="false" IsPrimaryKey="true" Width="50px"></GridColumn>
+
+            @*Spinner*@
+            <SfSpinner @bind-Visible="@VisibleProp"></SfSpinner>
+
+            @* Column Count*@
+            <GridColumn HeaderText="Row Number" Width="100px">
+                <Template>
+                    @{
+                        var employee = (context as EmployeeViewModel);
+                        var rowIndex = employeeData.IndexOf(employee) + 1;
+                        <span>@rowIndex</span>
+                    }
+                </Template>
+            </GridColumn>
 
             @*Profile Image Column and Dropdonw Setting*@
             <GridColumn HeaderText="Profile" Width="120px">
@@ -83,8 +97,39 @@
                 </EditTemplate>
             </GridForeignColumn>
 
-            @*Spinner*@
-            <SfSpinner @bind-Visible="@VisibleProp"></SfSpinner>
+            @*Operations Buttons*@
+            <GridColumn HeaderText="Operations" Width="110">
+                <GridCommandColumns>
+                    <GridCommandColumn Type="CommandButtonType.Edit"
+                                       ButtonOption="@(new CommandButtonOptions(){
+                                                IconCss = "e-icons e-edit",
+                                                CssClass ="e-flat"
+                                            })">
+
+                    </GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Delete"
+                                       ButtonOption="@(new CommandButtonOptions(){
+                                                IconCss = "e-icons e-delete",
+                                                CssClass ="e-flat"
+                                            })">
+
+                    </GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Save"
+                                       ButtonOption="@(new CommandButtonOptions(){
+                                                IconCss = "e-icons e-update",
+                                                CssClass ="e-flat"
+                                            })">
+
+                    </GridCommandColumn>
+                    <GridCommandColumn Type="CommandButtonType.Cancel"
+                                       ButtonOption="@(new CommandButtonOptions(){
+                                                IconCss = "e-icons e-cancel-icon",
+                                                CssClass ="e-flat"
+                                            })">
+
+                    </GridCommandColumn>
+                </GridCommandColumns>
+            </GridColumn>
         </GridColumns>
     </SfGrid>
 </div>
@@ -105,8 +150,8 @@
 
 @code {
 
-    public bool VisibleProp { get; set; } = false;
     public SfGrid<EmployeeViewModel>? SfEmployeeGrid { get; set; }
+    public bool VisibleProp { get; set; } = false;
 
 
     private string[] genderCollection = Enum.GetNames(typeof(GenderValEnum));
@@ -115,7 +160,9 @@
     private List<EmployeeJobTitle>? employeeJobTitleData;
     private List<ReportToViewModel>? reportToEmpoloyeeData;
 
-    private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
+    private List<object> toolbar = new List<object> { "Add", "Update", "Cancel", "Search","ExcelExport","PdfExport",
+    new ItemModel(){Text = "XML Export", TooltipText ="Export Data to XML",
+                                        PrefixIcon = "e-click", Id = "XmlExport"} };
 
     protected override async Task OnInitializedAsync()
     {
@@ -163,6 +210,23 @@
 
                 SfEmployeeGrid?.Refresh();
             }
+        }
+    }
+
+    // Grid Event => On Toolbar Click
+    public async void ToolbarBtnClickHandler(ClickEventArgs args)
+    {
+        if (args.Item.Id.Contains("_excelexport"))
+        {
+            await SfEmployeeGrid?.ExportToExcelAsync();
+        }
+        else if (args.Item.Id.Contains("_pdfexport"))
+        {
+            await SfEmployeeGrid?.ExportToPdfAsync();
+        }
+        else if (args.Item.Id.Contains("XmlExport"))
+        {
+            Console.Write("Export to Xml functionality");
         }
     }
 }
