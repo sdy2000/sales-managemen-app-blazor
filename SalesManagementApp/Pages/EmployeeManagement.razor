@@ -3,6 +3,7 @@
 @using SalesManagement.Core.DTOs;
 @using SalesManagement.Core.Services.Contracts;
 @using SalesManagement.Data.Entities;
+@using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
 @using Syncfusion.Blazor.Navigations;
@@ -14,16 +15,25 @@
 
 
 <div class="container">
-    <SfGrid @ref="SfEmployeeGrid" AllowExcelExport="true" AllowPdfExport="true" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
-        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+    <SfGrid @ref="SfEmployeeGrid" AllowPaging="true" AllowExcelExport="true" AllowPdfExport="true" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
+        <GridEditSettings Mode="EditMode.Dialog" AllowAdding="true" AllowEditing="true" AllowDeleting="true">
+            <HeaderTemplate>
+                <span>@(GetDialogHeaderText(context as EmployeeViewModel))</span>
+            </HeaderTemplate>
+            <FooterTemplate>
+                <SfButton OnClick="@Save" IsPrimary = "true">@DialogButtonCaption</SfButton>
+                <SfButton OnClick="@Cancel">Cancel</SfButton>
+            </FooterTemplate>
+        </GridEditSettings>
         <GridEvents OnToolbarClick="ToolbarBtnClickHandler" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeViewModel"></GridEvents>
+        
         <GridColumns>
 
             @*Spinner*@
             <SfSpinner @bind-Visible="@VisibleProp"></SfSpinner>
 
             @* Column Count*@
-            <GridColumn HeaderText="Row Number" Width="100px">
+            <GridColumn HeaderText="Row Number" AllowAdding="false" AllowEditing="false" Width="100px">
                 <Template>
                     @{
                         var employee = (context as EmployeeViewModel);
@@ -34,7 +44,7 @@
             </GridColumn>
 
             @*Profile Image Column and Dropdonw Setting*@
-            <GridColumn HeaderText="Profile" Width="120px">
+            <GridColumn HeaderText="Profile" AllowAdding="false" AllowEditing="false" Width="120px">
                 <Template>
                     @{
                         var employee = (context as EmployeeViewModel);
@@ -152,6 +162,7 @@
 
     public SfGrid<EmployeeViewModel>? SfEmployeeGrid { get; set; }
     public bool VisibleProp { get; set; } = false;
+    private string DialogButtonCaption { get; set; }
 
 
     private string[] genderCollection = Enum.GetNames(typeof(GenderValEnum));
@@ -228,5 +239,29 @@
         {
             Console.Write("Export to Xml functionality");
         }
+    }
+
+    // Grid Event => On Toolbar Click
+    private string GetDialogHeaderText(EmployeeViewModel employeeModel)
+    {
+        if (employeeModel.Id == 0)
+        {
+            DialogButtonCaption = "Add";
+            return "Add Employee";
+        }
+        else
+        {
+            DialogButtonCaption = "Update";
+            return $"Edit Details: {employeeModel.FirstName} {employeeModel.LastName}";
+        }
+    }
+
+    private async Task Cancel()
+    {
+        await SfEmployeeGrid.CloseEditAsync();
+    }
+    private async Task Save()
+    {
+        await SfEmployeeGrid.EndEditAsync();
     }
 }
