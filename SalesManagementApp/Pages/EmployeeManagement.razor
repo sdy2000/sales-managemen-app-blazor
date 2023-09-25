@@ -1,9 +1,11 @@
 ﻿@page "/EmployeeManagement"
+
 @using SalesManagement.Core.DTOs;
 @using SalesManagement.Core.Services.Contracts;
 @using SalesManagement.Data.Entities;
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
+@using Syncfusion.Blazor.Spinner
 
 @inject IEmployeeManagementService EmployeeManagementService
 
@@ -11,22 +13,26 @@
 
 
 <div class="container">
-    <SfGrid DataSource="employeeData">
-        <GridEditSettings AllowEditing="true"></GridEditSettings>
+    <SfGrid @ref="SfEmployeeGrid" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
+        <GridEditSettings AllowAdding="true" AllowEditing="true" AllowDeleting="true"></GridEditSettings>
+        <GridEvents OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeViewModel"></GridEvents>
         <GridColumns>
-            <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" IsPrimaryKey="true" Width="50px"></GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.Id)" HeaderText="ID" AllowAdding="false" IsPrimaryKey="true" Width="50px"></GridColumn>
+
+            @*Profile Image Column and Dropdonw Setting*@
             <GridColumn HeaderText="Profile" Width="120px">
                 <Template>
                     @{
                         var employee = (context as EmployeeViewModel);
                         <div class="profile-image-container">
-                        <img src="@(employee?.ImagePath)" />
+                            <img src="@(employee?.ImagePath)" />
                         </div>
                     }
                 </Template>
             </GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.FirstName)" HeaderText="First Name"></GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.LastName)" HeaderText="Last Name"></GridColumn>
+
             @*Designation Column and Dropdonw Setting*@
             <GridForeignColumn Field="@nameof(EmployeeViewModel.EmployeeJobTitleId)"
                                TValue="EmployeeJobTitle"
@@ -45,6 +51,7 @@
                     </SfDropDownList>
                 </EditTemplate>
             </GridForeignColumn>
+
             @*Gender Column and Dropdonw Setting*@
             <GridColumn Field="@nameof(EmployeeViewModel.Gender)" HeaderText="Gender" Width="100px">
                 <EditTemplate>
@@ -54,6 +61,7 @@
                     </SfDropDownList>
                 </EditTemplate>
             </GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.Email)" HeaderText="Email" Width="170px"></GridColumn>
             <GridColumn Field="@nameof(EmployeeViewModel.DateOfBirth)" HeaderText="DOB" Format="d"></GridColumn>
 
             @*Reports Column and Dropdonw Setting*@
@@ -75,6 +83,8 @@
                 </EditTemplate>
             </GridForeignColumn>
 
+            @*Spinner*@
+            <SfSpinner @bind-Visible="@VisibleProp"></SfSpinner>
         </GridColumns>
     </SfGrid>
 </div>
@@ -94,17 +104,65 @@
 
 
 @code {
+
+    public bool VisibleProp { get; set; } = false;
+    public SfGrid<EmployeeViewModel>? SfEmployeeGrid { get; set; }
+
+
     private string[] genderCollection = Enum.GetNames(typeof(GenderValEnum));
+
     private List<EmployeeViewModel>? employeeData = null;
     private List<EmployeeJobTitle>? employeeJobTitleData;
     private List<ReportToViewModel>? reportToEmpoloyeeData;
 
-    //private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
+    private List<object> toolbar = new List<object> { "Add", "Edit", "Delete", "Update", "Cancel", "Search" };
 
     protected override async Task OnInitializedAsync()
     {
+        VisibleProp = true;
+
         employeeData = await EmployeeManagementService.GetEmployees();
         employeeJobTitleData = await EmployeeManagementService.GetEmployeeJobTitles();
         reportToEmpoloyeeData = await EmployeeManagementService.GetReportToEmployees();
+
+        VisibleProp = false;
+    }
+
+    //Grid Event => On Action Begin
+    public async void ActionBeginHandler(ActionEventArgs<EmployeeViewModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                await EmployeeManagementService.AddEmployee(args.Data);
+                await EmployeeManagementService.SaveChanges();
+            }
+            if (args.Action == "Edit")
+            {
+                await EmployeeManagementService.UpdateEmployee(args.Data);
+                await EmployeeManagementService.SaveChanges();
+            }
+        }
+        else if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Delete))
+        {
+            await EmployeeManagementService.DeleteEmployee(args.Data.Id);
+            await EmployeeManagementService.SaveChanges();
+
+        }
+    }
+
+    //Grid Event => On Action Complete
+    public async void ActionCompleteHandler(ActionEventArgs<EmployeeViewModel> args)
+    {
+        if (args.RequestType.Equals(Syncfusion.Blazor.Grids.Action.Save))
+        {
+            if (args.Action == "Add")
+            {
+                employeeData = await EmployeeManagementService.GetEmployees();
+
+                SfEmployeeGrid?.Refresh();
+            }
+        }
     }
 }

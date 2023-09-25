@@ -18,6 +18,100 @@ namespace SalesManagement.Core.Services
 
 
 
+
+        public async Task<Employee> AddEmployee(EmployeeViewModel employeeViewModel)
+        {
+            try
+            {
+                Employee employeeToAdd = employeeViewModel.Convert();
+
+                var result = await _context.Employees.AddAsync(employeeToAdd);
+
+                return result.Entity;
+
+            }
+            catch (Exception)
+            {
+                return null;
+                throw;
+            }
+        }
+
+        public async Task<bool> UpdateEmployee(EmployeeViewModel employeeViewModel)
+        {
+            try
+            {
+                Employee employeeToUpdate = await _context.Employees.FindAsync(employeeViewModel.Id);
+
+                if (employeeToUpdate != null)
+                {
+                    employeeToUpdate.FirstName = employeeViewModel.FirstName;
+                    employeeToUpdate.LastName = employeeViewModel.LastName;
+                    employeeToUpdate.ReportToEmpId = employeeViewModel.ReportToEmpId;
+                    employeeToUpdate.DateOfBirth = employeeViewModel.DateOfBirth;
+                    employeeToUpdate.ImagePath = employeeViewModel.ImagePath;
+                    employeeToUpdate.Gender = employeeViewModel.Gender;
+                    employeeToUpdate.Email = employeeViewModel.Email;
+                    employeeToUpdate.EmployeeJobTitleId = employeeViewModel.EmployeeJobTitleId;
+                }
+                else
+                {
+                    return false;
+                }
+
+
+                return true;
+
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteEmployee(int employeeId)
+        {
+            try
+            {
+                Employee employeeToDelete = await _context.Employees.FindAsync(employeeId);
+
+                if (employeeToDelete != null)
+                {
+                    _context.Employees.Remove(employeeToDelete);
+                }
+                else
+                {
+                    return false;
+                }
+
+                return true;
+                }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+        public async Task<bool> SaveChanges()
+        {
+            try
+            {
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+                throw;
+            }
+        }
+
+
+
+
         public async Task<List<EmployeeViewModel>> GetEmployees()
         {
             try
