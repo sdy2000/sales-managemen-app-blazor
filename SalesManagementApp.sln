@@ -3,11 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33122.133
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesManagementApp", "SalesManagementApp\SalesManagementApp.csproj", "{7EF35B28-78DA-460B-A9C5-0206DBEBD3D5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalesManagementApp", "SalesManagementApp\SalesManagementApp.csproj", "{7EF35B28-78DA-460B-A9C5-0206DBEBD3D5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesManagement.Core", "SalesManagement.Core\SalesManagement.Core.csproj", "{490B8356-4B46-46AD-9DF6-ED074646DC1A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalesManagement.Core", "SalesManagement.Core\SalesManagement.Core.csproj", "{490B8356-4B46-46AD-9DF6-ED074646DC1A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SalesManagement.Data", "SalesManagement.Data\SalesManagement.Data.csproj", "{FC6CA42D-74FC-43AD-8267-2761A0988AE3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SalesManagement.Data", "SalesManagement.Data\SalesManagement.Data.csproj", "{FC6CA42D-74FC-43AD-8267-2761A0988AE3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

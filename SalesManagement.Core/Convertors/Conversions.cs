@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SalesManagement.Core.DTOs;
+using SalesManagement.Data.Context;
 using SalesManagement.Data.Entities;
 
 namespace SalesManagement.Core.Convertors
@@ -37,6 +38,24 @@ namespace SalesManagement.Core.Convertors
                 ImagePath = employeeViewModel.Gender.ToUpper() == "MALE" ? "/Images/Profile/MaleDefault.jpg"
                                                                          : "/Images/Profile/FemaleDefault.jpg",
             };
+        }
+
+        public static async Task<List<ProductViewModel>> Convert(this IQueryable<Product> products,
+                                                           SalesManagementDbContext context)
+        {
+            return await (from prod in products
+                          join prodCat in context.ProductCategories
+                          on prod.CategoryId equals prodCat.Id
+                          select new ProductViewModel
+                          {
+                              Id = prod.Id,
+                              Name = prod.Name,
+                              Description = prod.Description,
+                              ImagePath = prod.ImagePath,
+                              Price = prod.Price,
+                              CategoryId = prod.CategoryId,
+                              CategoryName = prodCat.Name
+                          }).ToListAsync();
         }
     }
 }

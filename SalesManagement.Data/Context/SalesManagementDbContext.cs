@@ -14,6 +14,9 @@ namespace SalesManagement.Data.Context
         public DbSet<Employee> Employees { get; set; }
         public DbSet<EmployeeJobTitle> EmployeeJobTitles { get; set; }
 
+        public DbSet<Product> Products { get; set; }
+        public DbSet<ProductCategory> ProductCategories { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -21,6 +24,7 @@ namespace SalesManagement.Data.Context
 
 
             SeedEmployeeData.AddEmployeeData(modelBuilder);
+            SeedProductData.AddProductData(modelBuilder);
         }
     }
 }
