@@ -3,10 +3,11 @@
 @using SalesManagement.Core.DTOs;
 @using SalesManagement.Core.Services.Contracts;
 @using SalesManagement.Data.Entities;
+
 @using Syncfusion.Blazor.Buttons
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Grids
-@using Syncfusion.Blazor.Navigations;
+@using Syncfusion.Blazor.Navigations
 @using Syncfusion.Blazor.Spinner
 
 @inject IEmployeeManagementService EmployeeManagementService
@@ -15,7 +16,7 @@
 
 
 <div class="container">
-    <SfGrid @ref="SfEmployeeGrid" AllowPaging="true" AllowExcelExport="true" AllowPdfExport="true" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
+    <SfGrid @ref="SfEmployeeGrid" AllowExcelExport="true" AllowPdfExport="true" AllowFiltering="true" AllowSorting="true" DataSource="employeeData" Toolbar="@toolbar">
         <GridEditSettings Mode="EditMode.Dialog" AllowAdding="true" AllowEditing="true" AllowDeleting="true">
             <HeaderTemplate>
                 <span>@(GetDialogHeaderText(context as EmployeeViewModel))</span>
@@ -26,7 +27,7 @@
             </FooterTemplate>
         </GridEditSettings>
         <GridEvents OnToolbarClick="ToolbarBtnClickHandler" OnActionBegin="ActionBeginHandler" OnActionComplete="ActionCompleteHandler" TValue="EmployeeViewModel"></GridEvents>
-        
+       <GridFilterSettings Type="Syncfusion.Blazor.Grids.FilterType.Menu"></GridFilterSettings>
         <GridColumns>
 
             @*Spinner*@
@@ -42,6 +43,8 @@
                     }
                 </Template>
             </GridColumn>
+            <GridColumn Field="@nameof(EmployeeViewModel.Id)" IsPrimaryKey="true"  AllowAdding="false"  AllowEditing="false"  HeaderText="ID" Visible="false"></GridColumn>
+
 
             @*Profile Image Column and Dropdonw Setting*@
             <GridColumn HeaderText="Profile" AllowAdding="false" AllowEditing="false" Width="120px">
