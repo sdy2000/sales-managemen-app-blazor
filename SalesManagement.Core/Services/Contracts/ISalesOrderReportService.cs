@@ -6,5 +6,6 @@ namespace SalesManagement.Core.Services.Contracts
     {
         Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData();
         Task<List<GroupedFieldQtyModel>> GetQtyPerProductCategory();
+        Task<List<GroupedFieldQtyModel>> GetQtyPerMonthData();
     }
 }
