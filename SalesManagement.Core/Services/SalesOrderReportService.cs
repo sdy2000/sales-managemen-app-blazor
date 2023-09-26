@@ -1,4 +1,5 @@
-﻿using SalesManagement.Core.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using SalesManagement.Core.DTOs;
 using SalesManagement.Core.Services.Contracts;
 using SalesManagement.Data.Context;
 
@@ -14,14 +15,13 @@ namespace SalesManagement.Core.Services
         }
 
 
-        public Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData()
+        public async Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData()
         {
             try
             {
-                var employee = await GetLoggedOnEmployee();
 
-                var reportData = await(from s in _context.SalesOrderReports
-                                       where s.EmployeeId == employee.Id && s.OrderDateTime.Year == DateTime.Now.Year
+                var reportData = await (from s in _context.SalesOrderReports
+                                       where s.EmployeeId == 9 && s.OrderDateTime.Year == DateTime.Now.Year
                                        group s by s.OrderDateTime.Month into GroupedData
                                        orderby GroupedData.Key
                                        select new GroupedFieldPriceModel
