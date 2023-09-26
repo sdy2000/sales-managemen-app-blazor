@@ -1,8 +1,9 @@
 ﻿@page "/ProductCatalog"
 
-@using Syncfusion.Blazor.DropDowns
-@using Syncfusion.Blazor.Lists
 @using System.Globalization;
+@using Syncfusion.Blazor.DropDowns
+@using Syncfusion.Blazor.Inputs
+@using Syncfusion.Blazor.Lists
 @using Syncfusion.Blazor.Notifications;
 
 @inject IProductService ProductService
@@ -11,12 +12,23 @@
 
 <h3>Product Catalog</h3>
 
+<div class="col-lg-4 control-section">
+    <SfToast @ref="ToastObj" ID="toast_type">
+        <ToastPosition X="@ToastPosition"></ToastPosition>
+    </SfToast>
+</div>
+
 <div class="row mt-3">    
     <div class="col-12">
         <SfComboBox CssClass="client-combo" DataSource="ClientData" TValue="int" TItem="ClientViewModel"
             @bind-value="ClientId">
             <ComboBoxFieldSettings Text="RetailOutletName" Value="Id"></ComboBoxFieldSettings>
         </SfComboBox>
+    </div>
+</div>
+<div class="row mt-3">
+    <div class="col-12">
+        <SfTextBox CssClass="filter-text" Placeholder="Filter Products" Input="@OnInput"></SfTextBox>
     </div>
 </div>
 <div class="row mt-1">
@@ -134,14 +146,39 @@
     private int ClientId { get; set; } = 1;
     private List<ProductViewModel> ProductData { get; set; }
     private List<ClientViewModel> ClientData { get; set; }
+    private List<ProductViewModel>? ProductCollectionFilter;
 
 
     private SfToast? ToastObj;
+    private string ToastPosition = "Right";
+    private List<ToastModel> Toast = new List<ToastModel>
+    {
+        new ToastModel{ Title = "Warning!", Content="There was a problem with your network connection.", CssClass="e-toast-warning", Icon="e-warning toast-icons" },
+        new ToastModel{ Title = "Success!", Content="Your order has been created successfully.", CssClass="e-toast-success", Icon="e-success toast-icons" },
+        new ToastModel{ Title = "Error!", Content="A problem occurred while creating your order.", CssClass="e-toast-danger", Icon="e-error toast-icons" },
+        new ToastModel{ Title = "Error!", Content="You do not have an order selected.", CssClass="e-toast-danger", Icon="e-error toast-icons" },
+        new ToastModel{ Title = "Information!", Content="Please read the comments carefully.", CssClass="e-toast-info", Icon="e-info toast-icons" }
+    };
 
     protected override async Task OnInitializedAsync()
     {
         ProductData = await ProductService.GetProducts();
         ClientData = await ClientService.GetClients();
+
+        ProductCollectionFilter = ProductData;
+    }
+    void OnInput(InputEventArgs eventArgs)
+    {
+        if (eventArgs.Value != "")
+        {
+            string val = eventArgs.Value.ToLower();
+
+            ProductData = ProductCollectionFilter?.FindAll(e => e.Name.ToLower().StartsWith(val));
+        }
+        else
+        {
+            ProductData = ProductCollectionFilter;
+        }
     }
 
     protected async Task CreateOrder()
@@ -149,7 +186,7 @@
         try
         {
             SelectedItems<ProductViewModel> productsOrdered = await SfProductsLV.GetCheckedItemsAsync();
-
+            
             if (productsOrdered.Data.Count() > 0)
             {
                 List<OrderItem> orderItems = (from p in productsOrdered.Data
@@ -167,13 +204,16 @@
                     };
 
                 await OrderService.CreateOrder(orderModel);
-                //await this.ToastObj.Show(Toast[1]);
+                await this.ToastObj.Show(Toast[1]);
+            }
+            else
+            {
+                await this.ToastObj.Show(Toast[3]);
             }
         }
         catch (Exception)
         {
-            //await this.ToastObj.Show(Toast[2]);
-            // throw;
+            await this.ToastObj.Show(Toast[2]);
         }
     }
 }
