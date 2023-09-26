@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SalesManagement.Core.DTOs;
-using SalesManagement.Core.DTOs.Client;
 using SalesManagement.Data.Context;
 using SalesManagement.Data.Entities;
 

@@ -1,5 +1,5 @@
 ﻿using SalesManagement.Core.Convertors;
-using SalesManagement.Core.DTOs.Client;
+using SalesManagement.Core.DTOs;
 using SalesManagement.Core.Services.Contracts;
 using SalesManagement.Data.Context;
 
@@ -9,7 +9,7 @@ namespace SalesManagement.Core.Services
     {
 		private SalesManagementDbContext _context;
 
-		public ClientService(SalesManagementDbContext context)
+        public ClientService(SalesManagementDbContext context)
 		{
 			_context = context;
 		}

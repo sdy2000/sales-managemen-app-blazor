@@ -1,4 +1,4 @@
-﻿using SalesManagement.Core.DTOs.Client;
+﻿using SalesManagement.Core.DTOs;
 
 namespace SalesManagement.Core.Services.Contracts
 {

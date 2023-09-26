@@ -1,4 +1,4 @@
-﻿namespace SalesManagement.Core.DTOs.Client
+﻿namespace SalesManagement.Core.DTOs
 {
     public class ClientViewModel
     {
