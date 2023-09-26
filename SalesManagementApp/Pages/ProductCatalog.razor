@@ -3,9 +3,11 @@
 @using Syncfusion.Blazor.DropDowns
 @using Syncfusion.Blazor.Lists
 @using System.Globalization;
+@using Syncfusion.Blazor.Notifications;
 
 @inject IProductService ProductService
 @inject IClientService ClientService
+@inject IOrderService OrderService
 
 <h3>Product Catalog</h3>
 
@@ -19,7 +21,7 @@
 </div>
 <div class="row mt-1">
     <div class="col-12">
-        <SfListView ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
+        <SfListView @ref="SfProductsLV" ShowCheckBox="true" DataSource="ProductData" CssClass="e-list-template listview-template">
             <ListViewFieldSettings TValue="ProductViewModel" Id="Id" Text="Name"
                                    GroupBy="CategoryName"></ListViewFieldSettings>
             <ListViewTemplates TValue="ProductViewModel">
@@ -38,6 +40,14 @@
                 </GroupTemplate>
             </ListViewTemplates>
         </SfListView>
+    </div>
+</div>
+<div class="row mt-4">
+    <div class="col-6">
+        <button class="btn btn-outline-dark" @onclick="()=>(CreateOrder())">
+            Create Order
+        </button>
+
     </div>
 </div>
 
@@ -118,13 +128,52 @@
 </style>
 
 @code {
+
+    private SfListView<ProductViewModel> SfProductsLV { get; set; }
+
     private int ClientId { get; set; } = 1;
     private List<ProductViewModel> ProductData { get; set; }
     private List<ClientViewModel> ClientData { get; set; }
+
+
+    private SfToast? ToastObj;
 
     protected override async Task OnInitializedAsync()
     {
         ProductData = await ProductService.GetProducts();
         ClientData = await ClientService.GetClients();
+    }
+
+    protected async Task CreateOrder()
+    {
+        try
+        {
+            SelectedItems<ProductViewModel> productsOrdered = await SfProductsLV.GetCheckedItemsAsync();
+
+            if (productsOrdered.Data.Count() > 0)
+            {
+                List<OrderItem> orderItems = (from p in productsOrdered.Data
+                                              select new OrderItem
+                                                  {
+                                                      ProductId = p.Id,
+                                                      Price = p.Price,
+                                                      Qty = 1
+                                                  }).ToList();
+
+                OrderViewModel orderModel = new OrderViewModel
+                    {
+                        ClientId = ClientId,
+                        OrderItems = orderItems
+                    };
+
+                await OrderService.CreateOrder(orderModel);
+                //await this.ToastObj.Show(Toast[1]);
+            }
+        }
+        catch (Exception)
+        {
+            //await this.ToastObj.Show(Toast[2]);
+            // throw;
+        }
     }
 }

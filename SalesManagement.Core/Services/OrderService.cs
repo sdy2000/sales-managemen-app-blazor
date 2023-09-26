@@ -38,7 +38,7 @@ namespace SalesManagement.Core.Services
             {
                 Order order = new Order
                 {
-                    OrderDateTime = orderViewModel.OrderDateTime,
+                    OrderDateTime = DateTime.Now,
                     ClientId = orderViewModel.ClientId,
                     EmployeeId = 9,
                     Price = orderViewModel.OrderItems.Sum(o=>o.Price),
@@ -46,6 +46,8 @@ namespace SalesManagement.Core.Services
                 };
 
                 EntityEntry<Order> addedOrder = await _context.Orders.AddAsync(order);
+                SavaChange();
+
                 int orderId = addedOrder.Entity.Id;
 
                 List<OrderItem> orderItemsToAdd = ReturnOrderItemsWithOrderId(orderId, orderViewModel.OrderItems);
