@@ -17,14 +17,18 @@ namespace SalesManagement.Data.Context
         public DbSet<Product> Products { get; set; }
         public DbSet<ProductCategory> ProductCategories { get; set; }
 
+        public DbSet<Client> Clients { get; set; }
+        public DbSet<RetailOutlet> RetailOutlets { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-
+            //Seed Tables
             SeedEmployeeData.AddEmployeeData(modelBuilder);
             SeedProductData.AddProductData(modelBuilder);
+            SeedClientData.AddClientData(modelBuilder);
         }
     }
 }

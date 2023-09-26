@@ -28,6 +28,7 @@ builder.Services.AddDbContext<SalesManagementDbContext>(options =>
 
 builder.Services.AddScoped<IEmployeeManagementService, EmployeeManagementService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IClientService, ClientService>();
 
 #endregion
 
