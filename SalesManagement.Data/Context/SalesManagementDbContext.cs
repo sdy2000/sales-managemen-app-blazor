@@ -23,6 +23,8 @@ namespace SalesManagement.Data.Context
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
 
+        public DbSet<SalesOrderReport> SalesOrderReports { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
