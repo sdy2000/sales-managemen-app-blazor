@@ -214,6 +214,93 @@ namespace SalesManagement.Core.Services
             return teamMemberIds;
 
         }
-       
+
+        //SM
+        public async Task<List<LocationProductCategoryModel>> GetQtyLocationProductCatData()
+        {
+            try
+            {
+                var reportData = await (from s in _context.SalesOrderReports
+                                        group s by s.RetailOutletLocation into GroupedData
+                                        orderby GroupedData.Key
+                                        select new LocationProductCategoryModel
+                                        {
+                                            Location = GroupedData.Key,
+                                            MountainBikes = GroupedData.Where(p => p.ProductCategoryId == 1).Sum(o => o.OrderItemQty),
+                                            RoadBikes = GroupedData.Where(p => p.ProductCategoryId == 2).Sum(o => o.OrderItemQty),
+                                            Camping = GroupedData.Where(p => p.ProductCategoryId == 3).Sum(o => o.OrderItemQty),
+                                            Hiking = GroupedData.Where(p => p.ProductCategoryId == 4).Sum(o => o.OrderItemQty),
+                                            Boots = GroupedData.Where(p => p.ProductCategoryId == 5).Sum(o => o.OrderItemQty),
+
+                                        }).ToListAsync();
+                return reportData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<List<GroupedFieldQtyModel>> GetQtyPerLocationData()
+        {
+            try
+            {
+                var reportData = await (from s in _context.SalesOrderReports
+                                        group s by s.RetailOutletLocation into GroupData
+                                        orderby GroupData.Key
+                                        select new GroupedFieldQtyModel
+                                        {
+                                            GroupedFieldKey = GroupData.Key,
+                                            Qty = GroupData.Sum(o => o.OrderItemQty)
+                                        }).ToListAsync();
+                return reportData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public async Task<List<MonthLocationModel>> GetQtyPerMonthLocationData()
+        {
+            //Note: this report applies to the current year
+            try
+            {
+                var reportData = await (from s in _context.SalesOrderReports
+                                        where s.OrderDateTime.Year == DateTime.Now.Year
+                                        group s by s.OrderDateTime.Month into GroupedData
+                                        orderby GroupedData.Key
+                                        select new MonthLocationModel
+                                        {
+                                            Month = (
+                                               GroupedData.Key == 1 ? "Jan" :
+                                               GroupedData.Key == 2 ? "Feb" :
+                                               GroupedData.Key == 3 ? "Mar" :
+                                               GroupedData.Key == 4 ? "Apr" :
+                                               GroupedData.Key == 5 ? "May" :
+                                               GroupedData.Key == 6 ? "Jun" :
+                                               GroupedData.Key == 7 ? "Jul" :
+                                               GroupedData.Key == 8 ? "Aug" :
+                                               GroupedData.Key == 9 ? "Sep" :
+                                               GroupedData.Key == 10 ? "Oct" :
+                                               GroupedData.Key == 11 ? "Nov" :
+                                               GroupedData.Key == 12 ? "Dec" :
+                                               ""
+                                           ),
+                                            TX = GroupedData.Where(l => l.RetailOutletLocation == "TX").Sum(o => o.OrderItemQty),
+                                            CA = GroupedData.Where(l => l.RetailOutletLocation == "CA").Sum(o => o.OrderItemQty),
+                                            NY = GroupedData.Where(l => l.RetailOutletLocation == "NY").Sum(o => o.OrderItemQty),
+                                            WA = GroupedData.Where(l => l.RetailOutletLocation == "WA").Sum(o => o.OrderItemQty)
+                                        }).ToListAsync();
+                return reportData;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
     }
 }
