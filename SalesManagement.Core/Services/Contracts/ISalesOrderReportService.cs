@@ -4,8 +4,17 @@ namespace SalesManagement.Core.Services.Contracts
 {
     public interface ISalesOrderReportService
     {
+        //SR
         Task<List<GroupedFieldPriceModel>> GetEmployeePricePerMonthData();
         Task<List<GroupedFieldQtyModel>> GetQtyPerProductCategory();
         Task<List<GroupedFieldQtyModel>> GetQtyPerMonthData();
+
+        //TL
+
+        //TL
+        Task<List<GroupedFieldPriceModel>> GetGrossSalesPerTeamMemberData();
+        Task<List<GroupedFieldQtyModel>> GetQtyPerTeamMemberData();
+        Task<List<GroupedFieldQtyModel>> GetTeamQtyPerMonthData();
+
     }
 }
