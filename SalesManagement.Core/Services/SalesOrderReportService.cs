@@ -205,15 +205,6 @@ namespace SalesManagement.Core.Services
                 throw;
             }
         }
-     
-        private async Task<List<int>> GetTeamMemberIds(int teamLeadId)
-        {
-            List<int> teamMemberIds = await _context.Employees
-                                        .Where(e => e.ReportToEmpId == teamLeadId)
-                                        .Select(e => e.Id).ToListAsync();
-            return teamMemberIds;
-
-        }
 
         //SM
         public async Task<List<LocationProductCategoryModel>> GetQtyLocationProductCatData()
@@ -301,6 +292,17 @@ namespace SalesManagement.Core.Services
 
                 throw;
             }
+        }
+     
+
+        // Private methods
+        private async Task<List<int>> GetTeamMemberIds(int teamLeadId)
+        {
+            List<int> teamMemberIds = await _context.Employees
+                                        .Where(e => e.ReportToEmpId == teamLeadId)
+                                        .Select(e => e.Id).ToListAsync();
+            return teamMemberIds;
+
         }
     }
 }
