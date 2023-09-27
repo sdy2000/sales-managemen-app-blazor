@@ -25,6 +25,10 @@ namespace SalesManagement.Data.Context
 
         public DbSet<SalesOrderReport> SalesOrderReports { get; set; }
 
+        public Task<List<SalesManagement.Core.DTOs.OrganisationModel>> ConvertToHierarchy(object salesManagementDbContext)
+        {
+            throw new NotImplementedException();
+        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
